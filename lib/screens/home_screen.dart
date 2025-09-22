@@ -9,12 +9,13 @@ import 'package:travel_tracker/utils/constants.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<Map<String, dynamic>> menuItems = [
-    {
-      'title': 'Start Trip',
-      'icon': Icons.directions_car,
-      'color': Colors.blue,
-      'screen': TripRecordScreen(),
-    },
+    // Change the Start Trip screen to use the simple version
+{
+  'title': 'Start Trip',
+  'icon': Icons.directions_car,
+  'color': Colors.blue,
+  'screen': TripRecordSimpleScreen(), // Use simple version instead
+},
     {
       'title': 'Trip History',
       'icon': Icons.history,
