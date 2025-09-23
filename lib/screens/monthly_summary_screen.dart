@@ -14,7 +14,6 @@ class MonthlySummaryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
       ],
-      showingTooltipIndicators: [0],
     ),
     BarChartGroupData(
       x: 1,
@@ -26,7 +25,6 @@ class MonthlySummaryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
       ],
-      showingTooltipIndicators: [0],
     ),
     BarChartGroupData(
       x: 2,
@@ -38,7 +36,6 @@ class MonthlySummaryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
       ],
-      showingTooltipIndicators: [0],
     ),
     BarChartGroupData(
       x: 3,
@@ -50,7 +47,6 @@ class MonthlySummaryScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
       ],
-      showingTooltipIndicators: [0],
     ),
   ];
 
@@ -74,10 +70,7 @@ class MonthlySummaryScreen extends StatelessWidget {
           children: [
             Text(
               'Distance by Transport Mode',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Container(
@@ -97,32 +90,7 @@ class MonthlySummaryScreen extends StatelessWidget {
               ),
               child: BarChart(
                 BarChartData(
-                  barTouchData: BarTouchData(
-                    enabled: true,
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipRoundedRadius: 8,
-                      tooltipMargin: 0,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        final modes = ['Car', 'Bus', 'Bicycle', 'Walk'];
-                        return BarTooltipItem(
-                          '${modes[group.x.toInt()]}\n',
-                          TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: '${rod.toY.toInt()} km',
-                              style: TextStyle(
-                                color: Colors.yellow,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                  barTouchData: BarTouchData(enabled: true),
                   titlesData: FlTitlesData(
                     show: true,
                     bottomTitles: AxisTitles(
@@ -164,10 +132,7 @@ class MonthlySummaryScreen extends StatelessWidget {
             SizedBox(height: 32),
             Text(
               'CO2 Saved (kg)',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Container(
@@ -187,24 +152,7 @@ class MonthlySummaryScreen extends StatelessWidget {
               ),
               child: LineChart(
                 LineChartData(
-                  lineTouchData: LineTouchData(
-                    enabled: true,
-                    touchTooltipData: LineTouchTooltipData(
-                      tooltipRoundedRadius: 8,
-                      tooltipBgColor: Colors.blueGrey,
-                      getTooltipItems: (List<LineBarSpot> touchedSpots) {
-                        return touchedSpots.map((spot) {
-                          return LineTooltipItem(
-                            '${spot.y.toInt()} kg',
-                            TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ),
+                  lineTouchData: LineTouchData(enabled: true),
                   gridData: FlGridData(show: true),
                   titlesData: FlTitlesData(
                     show: true,
@@ -232,7 +180,7 @@ class MonthlySummaryScreen extends StatelessWidget {
                   ),
                   borderData: FlBorderData(
                     show: true,
-                    border: Border.all(color: const Color(0xff37434d), width: 1),
+                    border: Border.all(color: Color(0xff37434d), width: 1),
                   ),
                   minX: 0,
                   maxX: 5,
@@ -258,10 +206,7 @@ class MonthlySummaryScreen extends StatelessWidget {
             SizedBox(height: 32),
             Text(
               'Monthly Stats',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             GridView.count(
@@ -286,9 +231,7 @@ class MonthlySummaryScreen extends StatelessWidget {
   Widget _buildStatCard(String title, String value, IconData icon) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -298,19 +241,13 @@ class MonthlySummaryScreen extends StatelessWidget {
             SizedBox(height: 8),
             Text(
               value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ],
         ),

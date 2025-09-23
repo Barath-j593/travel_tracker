@@ -1,147 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
-  final List<PieChartSectionData> modeShareData = [
-    PieChartSectionData(
-      color: Colors.red,
-      value: 40,
-      title: '40%',
-      radius: 60,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-    PieChartSectionData(
-      color: Colors.blue,
-      value: 30,
-      title: '30%',
-      radius: 60,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-    PieChartSectionData(
-      color: Colors.green,
-      value: 15,
-      title: '15%',
-      radius: 60,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-    PieChartSectionData(
-      color: Colors.purple,
-      value: 10,
-      title: '10%',
-      radius: 60,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-    PieChartSectionData(
-      color: Colors.orange,
-      value: 5,
-      title: '5%',
-      radius: 60,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-  ];
+class AdminDashboardScreen extends StatefulWidget {
+  @override
+  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
+}
 
-  final List<BarChartGroupData> tripCountData = [
-    BarChartGroupData(
-      x: 0,
-      barRods: [
-        BarChartRodData(
-          toY: 120,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedPlace = 'Overall';
+  
+  final Map<String, Map<String, dynamic>> _placeData = {
+    'Overall': {
+      'users': 1245,
+      'trips': 12458,
+      'modeShare': [
+        PieChartSectionData(value: 40, color: Colors.red, title: '40%'),
+        PieChartSectionData(value: 30, color: Colors.blue, title: '30%'),
+        PieChartSectionData(value: 15, color: Colors.green, title: '15%'),
+        PieChartSectionData(value: 10, color: Colors.purple, title: '10%'),
+        PieChartSectionData(value: 5, color: Colors.orange, title: '5%'),
       ],
-    ),
-    BarChartGroupData(
-      x: 1,
-      barRods: [
-        BarChartRodData(
-          toY: 145,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
+      'tripCount': [120, 145, 130, 160, 180, 90, 70],
+    },
+    'Chennai': {
+      'users': 345,
+      'trips': 3250,
+      'modeShare': [
+        PieChartSectionData(value: 35, color: Colors.red, title: '35%'),
+        PieChartSectionData(value: 40, color: Colors.blue, title: '40%'),
+        PieChartSectionData(value: 10, color: Colors.green, title: '10%'),
+        PieChartSectionData(value: 10, color: Colors.purple, title: '10%'),
+        PieChartSectionData(value: 5, color: Colors.orange, title: '5%'),
       ],
-    ),
-    BarChartGroupData(
-      x: 2,
-      barRods: [
-        BarChartRodData(
-          toY: 130,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
+      'tripCount': [80, 95, 110, 120, 130, 70, 50],
+    },
+    'Munnar': {
+      'users': 289,
+      'trips': 2780,
+      'modeShare': [
+        PieChartSectionData(value: 25, color: Colors.red, title: '25%'),
+        PieChartSectionData(value: 45, color: Colors.blue, title: '45%'),
+        PieChartSectionData(value: 15, color: Colors.green, title: '15%'),
+        PieChartSectionData(value: 10, color: Colors.purple, title: '10%'),
+        PieChartSectionData(value: 5, color: Colors.orange, title: '5%'),
       ],
-    ),
-    BarChartGroupData(
-      x: 3,
-      barRods: [
-        BarChartRodData(
-          toY: 160,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
+      'tripCount': [70, 85, 90, 110, 95, 60, 40],
+    },
+    'Bangalore': {
+      'users': 412,
+      'trips': 3980,
+      'modeShare': [
+        PieChartSectionData(value: 20, color: Colors.red, title: '20%'),
+        PieChartSectionData(value: 50, color: Colors.blue, title: '50%'),
+        PieChartSectionData(value: 20, color: Colors.green, title: '20%'),
+        PieChartSectionData(value: 5, color: Colors.purple, title: '5%'),
+        PieChartSectionData(value: 5, color: Colors.orange, title: '5%'),
       ],
-    ),
-    BarChartGroupData(
-      x: 4,
-      barRods: [
-        BarChartRodData(
-          toY: 180,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ],
-    ),
-    BarChartGroupData(
-      x: 5,
-      barRods: [
-        BarChartRodData(
-          toY: 90,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ],
-    ),
-    BarChartGroupData(
-      x: 6,
-      barRods: [
-        BarChartRodData(
-          toY: 70,
-          color: Colors.blue,
-          width: 15,
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ],
-    ),
+      'tripCount': [90, 110, 105, 140, 160, 80, 65],
+    },
+  };
+
+  final List<Map<String, dynamic>> usersData = [
+    {'name': 'John Doe', 'trips': 45, 'points': 1250, 'place': 'Chennai'},
+    {'name': 'Jane Smith', 'trips': 32, 'points': 980, 'place': 'Munnar'},
+    {'name': 'Robert Johnson', 'trips': 28, 'points': 850, 'place': 'Bangalore'},
+    {'name': 'Sarah Wilson', 'trips': 51, 'points': 1450, 'place': 'Chennai'},
+    {'name': 'Mike Brown', 'trips': 23, 'points': 720, 'place': 'Overall'},
   ];
 
   @override
   Widget build(BuildContext context) {
+    final currentData = _placeData[_selectedPlace]!;
+    
     return Scaffold(
       appBar: AppBar(title: Text('Admin Dashboard')),
       body: SingleChildScrollView(
@@ -149,21 +80,90 @@ class AdminDashboardScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Travel Analytics',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            // Search Bar
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(color: Colors.black12, blurRadius: 5),
+                ],
               ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search for a place...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (_placeData.containsKey(value)) {
+                          setState(() {
+                            _selectedPlace = value;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  DropdownButton<String>(
+                    value: _selectedPlace,
+                    items: _placeData.keys.map((String place) {
+                      return DropdownMenuItem<String>(
+                        value: place,
+                        child: Text(place),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedPlace = newValue!;
+                        _searchController.text = newValue;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Selected Place Header
+            Row(
+              children: [
+                Icon(Icons.place, color: Colors.blue),
+                SizedBox(width: 8),
+                Text(
+                  'Statistics for: $_selectedPlace',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+
+            // Key Metrics for Selected Place
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              children: [
+                _buildMetricCard('Total Users', '${currentData['users']}', Icons.people),
+                _buildMetricCard('Total Trips', '${currentData['trips']}', Icons.directions),
+                _buildMetricCard('Avg. Trips/User', '${(currentData['trips'] / currentData['users']).toStringAsFixed(1)}', Icons.analytics),
+                _buildMetricCard('Active Today', '${(currentData['users'] * 0.7).toInt()}', Icons.trending_up),
+              ],
             ),
             SizedBox(height: 24),
-            Text(
-              'Transport Mode Share',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
+            // Transport Mode Share for Selected Place
+            Text('Transport Mode Share - $_selectedPlace', 
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
             Container(
               height: 300,
@@ -171,45 +171,21 @@ class AdminDashboardScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
               ),
               child: PieChart(
                 PieChartData(
-                  sections: modeShareData,
+                  sections: currentData['modeShare'],
                   centerSpaceRadius: 40,
                   sectionsSpace: 2,
-                  startDegreeOffset: 180,
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {},
-                  ),
                 ),
               ),
             ),
             SizedBox(height: 24),
-            Row(
-              children: [
-                _buildLegendItem('Car', Colors.red),
-                _buildLegendItem('Bus', Colors.blue),
-                _buildLegendItem('Bicycle', Colors.green),
-                _buildLegendItem('Walk', Colors.purple),
-                _buildLegendItem('Other', Colors.orange),
-              ],
-            ),
-            SizedBox(height: 32),
-            Text(
-              'Daily Trip Count',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+
+            // Weekly Trip Count for Selected Place
+            Text('Weekly Trip Count - $_selectedPlace', 
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
             Container(
               height: 250,
@@ -217,14 +193,7 @@ class AdminDashboardScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
               ),
               child: BarChart(
                 BarChartData(
@@ -237,11 +206,8 @@ class AdminDashboardScreen extends StatelessWidget {
                         getTitlesWidget: (value, meta) {
                           final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                           return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              days[value.toInt()],
-                              style: TextStyle(fontSize: 12),
-                            ),
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(days[value.toInt()], style: TextStyle(fontSize: 12)),
                           );
                         },
                         reservedSize: 40,
@@ -250,66 +216,54 @@ class AdminDashboardScreen extends StatelessWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text('${value.toInt()}');
-                        },
+                        getTitlesWidget: (value, meta) => Text('${value.toInt()}'),
                         reservedSize: 40,
                       ),
                     ),
                   ),
                   borderData: FlBorderData(show: false),
-                  barGroups: tripCountData,
+                  barGroups: List.generate(7, (index) => BarChartGroupData(
+                    x: index,
+                    barRods: [BarChartRodData(
+                      toY: currentData['tripCount'][index].toDouble(),
+                      color: Colors.blue,
+                      width: 15,
+                    )],
+                  )),
                   gridData: FlGridData(show: true),
-                  alignment: BarChartAlignment.spaceAround,
                   maxY: 200,
                 ),
               ),
             ),
-            SizedBox(height: 32),
-            Text(
-              'Key Metrics',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            SizedBox(height: 24),
+
+            // Users by Place
+            Text('Users by Place', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              children: [
-                _buildMetricCard('Total Users', '1,245', Icons.people),
-                _buildMetricCard('Active Today', '895', Icons.trending_up),
-                _buildMetricCard('Total Trips', '12,458', Icons.directions),
-                _buildMetricCard('Avg. Distance', '8.2 km', Icons.place),
-              ],
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: usersData
+                      .where((user) => _selectedPlace == 'Overall' || user['place'] == _selectedPlace)
+                      .map((user) => ListTile(
+                    leading: CircleAvatar(
+                      child: Text(user['name'].toString().split(' ').map((n) => n[0]).join()),
+                    ),
+                    title: Text(user['name']),
+                    subtitle: Text('${user['trips']} trips • ${user['points']} points'),
+                    trailing: Chip(
+                      label: Text(user['place'], style: TextStyle(color: Colors.white)),
+                      backgroundColor: _getPlaceColor(user['place']),
+                    ),
+                  )).toList(),
+                ),
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildLegendItem(String text, Color color) {
-    return Expanded(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            color: color,
-          ),
-          SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(fontSize: 10),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ),
     );
   }
@@ -317,9 +271,7 @@ class AdminDashboardScreen extends StatelessWidget {
   Widget _buildMetricCard(String title, String value, IconData icon) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -327,25 +279,22 @@ class AdminDashboardScreen extends StatelessWidget {
           children: [
             Icon(icon, size: 30, color: Colors.blue),
             SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 4),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
+            Text(title, textAlign: TextAlign.center, 
+                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
           ],
         ),
       ),
     );
+  }
+
+  Color _getPlaceColor(String place) {
+    switch (place) {
+      case 'Chennai': return Colors.blue;
+      case 'Munnar': return Colors.red;
+      case 'Bangalore': return Colors.green;
+      default: return Colors.grey;
+    }
   }
 }

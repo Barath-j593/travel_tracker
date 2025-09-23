@@ -53,17 +53,12 @@ class _CompanionScreenState extends State<CompanionScreen> {
           children: [
             Text(
               'Add New Companion',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: Form(
@@ -117,10 +112,7 @@ class _CompanionScreenState extends State<CompanionScreen> {
             SizedBox(height: 32),
             Text(
               'Your Companions',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             _companions.isEmpty
@@ -167,9 +159,7 @@ class CompanionTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        leading: CircleAvatar(
-          child: Icon(Icons.person),
-        ),
+        leading: CircleAvatar(child: Icon(Icons.person)),
         title: Text(name),
         subtitle: Text(phone),
         trailing: IconButton(

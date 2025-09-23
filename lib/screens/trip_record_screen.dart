@@ -10,7 +10,7 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
   DateTime? _startTime;
   Duration _duration = Duration();
   double _distance = 0.0;
-  String _transportMode = 'Car';
+  String _transportMode = 'car'; // Changed to lowercase to match DropdownMenuItem values
 
   void _toggleRecording() {
     setState(() {
@@ -47,7 +47,7 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
           children: [
             Text('Duration: ${_formatDuration(_duration)}'),
             Text('Distance: ${_distance.toStringAsFixed(2)} km'),
-            Text('Mode: $_transportMode'),
+            Text('Mode: ${_transportMode}'), // Use lowercase for consistency
             Text('Eco Points: +${(_distance * 10).toInt()}'),
           ],
         ),
@@ -73,7 +73,6 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
       ),
       child: Stack(
         children: [
-          // Mock map elements
           Positioned(
             top: 50,
             left: 50,
@@ -113,7 +112,6 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Trip metrics
                   Card(
                     child: Padding(
                       padding: EdgeInsets.all(16),
@@ -122,32 +120,33 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
                         children: [
                           _buildMetric('Duration', _formatDuration(_duration)),
                           _buildMetric('Distance', '${_distance.toStringAsFixed(2)} km'),
-                          _buildMetric('Mode', _transportMode),
+                          _buildMetric('Mode', _transportMode), // Use lowercase
                         ],
                       ),
                     ),
                   ),
                   SizedBox(height: 16),
                   
-                  // Transport mode selector
                   DropdownButtonFormField<String>(
-                    value: _transportMode,
-                    items: ['Car', 'Bus', 'Bicycle', 'Walk', 'Train']
+                    value: _transportMode, // Ensure this matches an item value
+                    items: ['car', 'bus', 'bicycle', 'walk', 'train'] // Changed to lowercase
                         .map((mode) => DropdownMenuItem(
                               value: mode,
                               child: Row(
                                 children: [
                                   Icon(_getTransportIcon(mode)),
                                   SizedBox(width: 8),
-                                  Text(mode),
+                                  Text(mode.toUpperCase()), // Display uppercase for UI
                                 ],
                               ),
                             ))
                         .toList(),
                     onChanged: _isRecording ? null : (value) {
-                      setState(() {
-                        _transportMode = value!;
-                      });
+                      if (value != null) {
+                        setState(() {
+                          _transportMode = value;
+                        });
+                      }
                     },
                     decoration: InputDecoration(
                       labelText: 'Transport Mode',
@@ -156,7 +155,6 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
                   ),
                   SizedBox(height: 16),
                   
-                  // Start/Stop button
                   ElevatedButton.icon(
                     onPressed: _toggleRecording,
                     icon: Icon(_isRecording ? Icons.stop : Icons.play_arrow),

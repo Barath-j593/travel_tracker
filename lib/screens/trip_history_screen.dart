@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_tracker/models/trip.dart';
+import 'package:travel_tracker/services/trip_service.dart';
 import 'package:travel_tracker/services/api_service.dart';
 import 'package:intl/intl.dart';
 
@@ -12,6 +12,16 @@ class TripHistoryScreen extends StatefulWidget {
 class _TripHistoryScreenState extends State<TripHistoryScreen> {
   List<Trip> _trips = [];
   bool _isLoading = true;
+
+  // Define consistent transport modes
+  final List<String> _transportModes = ['walk', 'bicycle', 'car', 'bus', 'train'];
+  final Map<String, String> _modeDisplayNames = {
+    'walk': 'Walk',
+    'bicycle': 'Bicycle', 
+    'car': 'Car',
+    'bus': 'Bus',
+    'train': 'Train',
+  };
 
   @override
   void initState() {
@@ -28,10 +38,43 @@ class _TripHistoryScreenState extends State<TripHistoryScreen> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
+    }
+  }
+
+  void _updateTripMode(String tripId, String newMode) {
+    final index = _trips.indexWhere((trip) => trip.id == tripId);
+    if (index != -1) {
+      TripService.updateTripMode(tripId, newMode);
+      
+      setState(() {
+        final trip = _trips[index];
+        _trips[index] = Trip(
+          id: trip.id,
+          startTime: trip.startTime,
+          endTime: trip.endTime,
+          transportMode: newMode,
+          distance: trip.distance,
+          startLocation: trip.startLocation,
+          endLocation: trip.endLocation,
+          companions: trip.companions,
+        );
+      });
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load trips: ${e.toString()}')),
+        SnackBar(content: Text('Transport mode updated to ${_modeDisplayNames[newMode] ?? newMode}')),
       );
     }
+  }
+
+  String _formatLocation(LocationPoint location) {
+    return '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
+  }
+
+  String _getLocationName(LocationPoint location) {
+    if (location.latitude > 10.2) return 'City Center';
+    if (location.latitude > 10.1) return 'Downtown';
+    if (location.latitude > 10.0) return 'Suburban Area';
+    return 'Residential Area';
   }
 
   @override
@@ -41,12 +84,31 @@ class _TripHistoryScreenState extends State<TripHistoryScreen> {
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _trips.isEmpty
-              ? Center(child: Text('No trips recorded yet'))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.history, size: 60, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text('No trips recorded yet'),
+                      SizedBox(height: 8),
+                      Text('Your trips will appear here automatically', 
+                          style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                )
               : ListView.builder(
                   itemCount: _trips.length,
                   itemBuilder: (context, index) {
                     final trip = _trips[index];
-                    return TripCard(trip: trip);
+                    return TripCard(
+                      trip: trip,
+                      onModeChanged: (newMode) => _updateTripMode(trip.id, newMode),
+                      formatLocation: _formatLocation,
+                      getLocationName: _getLocationName,
+                      transportModes: _transportModes,
+                      modeDisplayNames: _modeDisplayNames,
+                    );
                   },
                 ),
     );
@@ -55,8 +117,21 @@ class _TripHistoryScreenState extends State<TripHistoryScreen> {
 
 class TripCard extends StatefulWidget {
   final Trip trip;
+  final Function(String) onModeChanged;
+  final String Function(LocationPoint) formatLocation;
+  final String Function(LocationPoint) getLocationName;
+  final List<String> transportModes;
+  final Map<String, String> modeDisplayNames;
 
-  const TripCard({Key? key, required this.trip}) : super(key: key);
+  const TripCard({
+    Key? key,
+    required this.trip,
+    required this.onModeChanged,
+    required this.formatLocation,
+    required this.getLocationName,
+    required this.transportModes,
+    required this.modeDisplayNames,
+  }) : super(key: key);
 
   @override
   _TripCardState createState() => _TripCardState();
@@ -64,6 +139,16 @@ class TripCard extends StatefulWidget {
 
 class _TripCardState extends State<TripCard> {
   bool _expanded = false;
+  late String _selectedMode;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure the selected mode is one of the valid transport modes
+    _selectedMode = widget.transportModes.contains(widget.trip.transportMode) 
+        ? widget.trip.transportMode 
+        : widget.transportModes.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +158,32 @@ class _TripCardState extends State<TripCard> {
         children: [
           ListTile(
             leading: Icon(
-              _getTransportIcon(widget.trip.transportMode),
-              color: _getTransportColor(widget.trip.transportMode),
+              _getTransportIcon(_selectedMode),
+              color: _getTransportColor(_selectedMode),
             ),
             title: Text(
-              '${widget.trip.transportMode.toUpperCase()} - ${widget.trip.distance.toStringAsFixed(1)} km',
+              '${widget.modeDisplayNames[_selectedMode]?.toUpperCase() ?? _selectedMode.toUpperCase()} - ${widget.trip.distance.toStringAsFixed(1)} km',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(
-              DateFormat('MMM dd, yyyy - HH:mm').format(widget.trip.startTime),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(DateFormat('MMM dd, yyyy - HH:mm').format(widget.trip.startTime)),
+                SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.place, size: 12, color: Colors.green),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${widget.getLocationName(widget.trip.startLocation)} → ${widget.getLocationName(widget.trip.endLocation)}',
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             trailing: IconButton(
               icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
@@ -97,50 +199,119 @@ class _TripCardState extends State<TripCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Trip Details',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  Text('Trip Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: 12),
+                  
+                  // Duration
+                  _buildDetailRow('Duration', _formatDuration(widget.trip)),
+                  
+                  // Distance
+                  _buildDetailRow('Distance', '${widget.trip.distance.toStringAsFixed(1)} km'),
+                  
+                  // Start Location
+                  _buildLocationRow(
+                    'Start Location',
+                    widget.getLocationName(widget.trip.startLocation),
+                    widget.formatLocation(widget.trip.startLocation),
+                    Colors.green,
                   ),
-                  SizedBox(height: 8),
+                  
+                  // End Location
+                  _buildLocationRow(
+                    'End Location',
+                    widget.getLocationName(widget.trip.endLocation),
+                    widget.formatLocation(widget.trip.endLocation),
+                    Colors.red,
+                  ),
+                  
+                  // Transport Mode (Editable)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Duration:'),
-                      Text(_formatDuration(widget.trip)),
+                      Text('Transport Mode:'),
+                      DropdownButton<String>(
+                        value: _selectedMode,
+                        items: widget.transportModes
+                            .map((mode) => DropdownMenuItem(
+                                  value: mode,
+                                  child: Text(widget.modeDisplayNames[mode] ?? mode),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedMode = value;
+                            });
+                            widget.onModeChanged(value);
+                          }
+                        },
+                      ),
                     ],
                   ),
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Distance:'),
-                      Text('${widget.trip.distance.toStringAsFixed(1)} km'),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Mode:'),
-                      Text(widget.trip.transportMode.toUpperCase()),
-                    ],
-                  ),
+                  
                   SizedBox(height: 16),
+                  
+                  // Map Preview
                   Container(
-                    height: 150,
+                    height: 120,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: Colors.grey[200],
                     ),
                     child: Center(
-                      child: Text('Map Preview',
-                          style: TextStyle(color: Colors.grey[600])),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.map, size: 30, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text('Route: ${widget.getLocationName(widget.trip.startLocation)} to ${widget.getLocationName(widget.trip.endLocation)}',
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('$label:'),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationRow(String label, String name, String coordinates, Color color) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.place, size: 16, color: color),
+              SizedBox(width: 4),
+              Text('$label:'),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(name, style: TextStyle(fontWeight: FontWeight.w500)),
+              Text(coordinates, style: TextStyle(fontSize: 10, color: Colors.grey)),
+            ],
+          ),
         ],
       ),
     );
@@ -156,31 +327,23 @@ class _TripCardState extends State<TripCard> {
 
   IconData _getTransportIcon(String mode) {
     switch (mode) {
-      case 'car':
-        return Icons.directions_car;
-      case 'bus':
-        return Icons.directions_bus;
-      case 'bicycle':
-        return Icons.directions_bike;
-      case 'walk':
-        return Icons.directions_walk;
-      default:
-        return Icons.directions;
+      case 'car': return Icons.directions_car;
+      case 'bus': return Icons.directions_bus;
+      case 'bicycle': return Icons.pedal_bike;
+      case 'walk': return Icons.directions_walk;
+      case 'train': return Icons.train;
+      default: return Icons.directions;
     }
   }
 
   Color _getTransportColor(String mode) {
     switch (mode) {
-      case 'car':
-        return Colors.red;
-      case 'bus':
-        return Colors.blue;
-      case 'bicycle':
-        return Colors.green;
-      case 'walk':
-        return Colors.purple;
-      default:
-        return Colors.grey;
+      case 'car': return Colors.red;
+      case 'bus': return Colors.blue;
+      case 'bicycle': return Colors.green;
+      case 'walk': return Colors.purple;
+      case 'train': return Colors.orange;
+      default: return Colors.grey;
     }
   }
 }

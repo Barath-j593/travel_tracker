@@ -19,7 +19,6 @@ const kCardTitleStyle = TextStyle(
 const kPrimaryColor = Colors.green;
 const kSecondaryColor = Colors.blue;
 
-// Add these colors for the charts
 const List<Color> kChartColors = [
   Colors.red,
   Colors.blue,
