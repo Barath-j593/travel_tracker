@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
 import 'package:travel_tracker/models/trip.dart';
 import 'package:travel_tracker/services/trip_service.dart';
 import 'package:travel_tracker/utils/constants.dart';
@@ -22,12 +23,10 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
   }
 
   void _startAutoDetection() {
-    // Simulate automatic trip detection
     _simulateTripDetection();
   }
 
   void _simulateTripDetection() {
-    // Simulate detecting a new trip after 3 seconds
     Future.delayed(Duration(seconds: 3), () {
       if (mounted && _isDetecting) {
         setState(() {
@@ -47,14 +46,12 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
   }
 
   void _startTripUpdates() {
-    // Update trip metrics every second
     Future.delayed(Duration(seconds: 1), () {
       if (mounted && _isDetecting && _currentTrip != null) {
         setState(() {
           _tripDuration = _tripDuration + Duration(seconds: 1);
-          _tripDistance = _tripDistance + 0.02; // Simulate movement
-          
-          // Simulate mode detection changes
+          _tripDistance = _tripDistance + 0.02;
+
           if (_tripDuration.inSeconds % 30 == 0) {
             List<String> modes = ['Walking', 'Cycling', 'Driving', 'Public Transport'];
             _detectedMode = modes[(_tripDuration.inSeconds ~/ 30) % modes.length];
@@ -66,38 +63,39 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
   }
 
   void _endTrip() {
+    final loc = AppLocalizations.of(context)!;
+
     setState(() {
       _isDetecting = false;
       if (_currentTrip != null) {
         TripService.completeTrip(_currentTrip!);
       }
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Trip completed automatically!'),
+        content: Text(loc.tripCompleted),
         backgroundColor: kPrimaryColor,
       ),
     );
-    
-    // Return to home after a delay
+
     Future.delayed(Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      if (mounted) Navigator.pop(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Automatic Trip Detection'),
+        title: Text(loc.autoTripDetectionTitle),
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              // Show detection settings
+              // TODO: add detection settings
             },
           ),
         ],
@@ -145,7 +143,9 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _isDetecting ? 'AUTOMATIC DETECTION ACTIVE' : 'DETECTION PAUSED',
+                            _isDetecting
+                                ? loc.detectionActive
+                                : loc.detectionPaused,
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 14,
@@ -154,9 +154,9 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            _isDetecting 
-                                ? 'Monitoring your movements...' 
-                                : 'Detection paused',
+                            _isDetecting
+                                ? loc.monitoringMovements
+                                : loc.detectionPaused,
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.8),
                               fontSize: 12,
@@ -200,7 +200,7 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                       Icon(Icons.trip_origin, color: kPrimaryColor),
                       SizedBox(width: 10),
                       Text(
-                        'TRIP IN PROGRESS',
+                        loc.tripInProgress,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: kPrimaryColor,
@@ -212,14 +212,16 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildTripMetric('Duration', _formatDuration(_tripDuration), Icons.access_time),
-                      _buildTripMetric('Distance', '${_tripDistance.toStringAsFixed(1)} km', Icons.place),
-                      _buildTripMetric('Mode', _detectedMode, Icons.directions),
+                      _buildTripMetric(
+                          loc.duration, _formatDuration(_tripDuration), Icons.access_time),
+                      _buildTripMetric(
+                          loc.distance, '${_tripDistance.toStringAsFixed(1)} km', Icons.place),
+                      _buildTripMetric(loc.mode, _detectedMode, Icons.directions),
                     ],
                   ),
                   SizedBox(height: 15),
                   Text(
-                    'Detected automatically based on your movement patterns',
+                    loc.detectedAutomatically,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.grey[600],
@@ -243,14 +245,12 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.gps_fixed,
-                    size: 60,
-                    color: kPrimaryColor,
-                  ),
+                  Icon(Icons.gps_fixed, size: 60, color: kPrimaryColor),
                   SizedBox(height: 20),
                   Text(
-                    _currentTrip != null ? 'Trip Detection Active' : 'Monitoring Movement',
+                    _currentTrip != null
+                        ? loc.tripDetectionActive
+                        : loc.monitoringMovement,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -259,8 +259,8 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                   SizedBox(height: 10),
                   Text(
                     _currentTrip != null
-                        ? 'Tracking your journey automatically'
-                        : 'Waiting for significant movement...',
+                        ? loc.trackingJourney
+                        : loc.waitingMovement,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey[600]),
                   ),
@@ -272,7 +272,7 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _endTrip,
-                      child: Text('End Trip Now'),
+                      child: Text(loc.endTripNow),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -299,7 +299,7 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                     Icon(Icons.info, color: Colors.blue, size: 20),
                     SizedBox(width: 10),
                     Text(
-                      'How automatic detection works:',
+                      loc.howDetectionWorks,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[700],
@@ -309,10 +309,7 @@ class _AutoTripDetectionScreenState extends State<AutoTripDetectionScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '• Detects movement patterns using GPS and sensors\n'
-                  '• Automatically identifies transport mode\n'
-                  '• Starts tracking when significant movement is detected\n'
-                  '• Respects privacy settings and battery optimization',
+                  loc.detectionInfo,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 12,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
 import 'package:travel_tracker/utils/constants.dart';
 
 class CompanionScreen extends StatefulWidget {
@@ -17,7 +18,9 @@ class _CompanionScreenState extends State<CompanionScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void _addCompanion() {
+  void _addCompanion(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     if (_formKey.currentState!.validate()) {
       setState(() {
         _companions.add({
@@ -28,37 +31,43 @@ class _CompanionScreenState extends State<CompanionScreen> {
         _phoneController.clear();
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Companion added successfully')),
+        SnackBar(content: Text(loc.companionAdded)),
       );
     }
   }
 
-  void _removeCompanion(int index) {
+  void _removeCompanion(BuildContext context, int index) {
+    final loc = AppLocalizations.of(context)!;
+
     setState(() {
       _companions.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Companion removed')),
+      SnackBar(content: Text(loc.companionRemoved)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Travel Companions')),
+      appBar: AppBar(title: Text(loc.travelCompanions)),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Add New Companion',
+              loc.addNewCompanion,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: Form(
@@ -68,12 +77,12 @@ class _CompanionScreenState extends State<CompanionScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: 'Name',
+                          labelText: loc.name,
                           prefixIcon: Icon(Icons.person),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a name';
+                            return loc.enterName;
                           }
                           return null;
                         },
@@ -82,24 +91,24 @@ class _CompanionScreenState extends State<CompanionScreen> {
                       TextFormField(
                         controller: _phoneController,
                         decoration: InputDecoration(
-                          labelText: 'Phone Number',
+                          labelText: loc.phoneNumber,
                           prefixIcon: Icon(Icons.phone),
                         ),
                         keyboardType: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter a phone number';
+                            return loc.enterPhone;
                           }
                           if (value.length < 10) {
-                            return 'Please enter a valid phone number';
+                            return loc.invalidPhone;
                           }
                           return null;
                         },
                       ),
                       SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: _addCompanion,
-                        child: Text('Add Companion'),
+                        onPressed: () => _addCompanion(context),
+                        child: Text(loc.addCompanion),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(double.infinity, 50),
                         ),
@@ -111,14 +120,14 @@ class _CompanionScreenState extends State<CompanionScreen> {
             ),
             SizedBox(height: 32),
             Text(
-              'Your Companions',
+              loc.yourCompanions,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
             _companions.isEmpty
                 ? Center(
                     child: Text(
-                      'No companions added yet',
+                      loc.noCompanions,
                       style: TextStyle(color: Colors.grey),
                     ),
                   )
@@ -131,7 +140,7 @@ class _CompanionScreenState extends State<CompanionScreen> {
                       return CompanionTile(
                         name: companion['name']!,
                         phone: companion['phone']!,
-                        onDelete: () => _removeCompanion(index),
+                        onDelete: () => _removeCompanion(context, index),
                       );
                     },
                   ),

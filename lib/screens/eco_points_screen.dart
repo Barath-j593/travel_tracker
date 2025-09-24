@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
 import 'package:travel_tracker/utils/constants.dart';
 
 class EcoPointsScreen extends StatefulWidget {
@@ -25,12 +26,14 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         appBar: AppBar(
-          title: Text('Eco Points & Rewards'),
+          title: Text(loc.ecoPointsTitle),
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
@@ -39,22 +42,22 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             labelColor: kPrimaryColor,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(icon: Icon(Icons.eco), text: 'Points'),
-              Tab(icon: Icon(Icons.card_giftcard), text: 'Rewards'),
+              Tab(icon: Icon(Icons.eco), text: loc.pointsTab),
+              Tab(icon: Icon(Icons.card_giftcard), text: loc.rewardsTab),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            _buildPointsTab(),
-            _buildRewardsTab(),
+            _buildPointsTab(loc),
+            _buildRewardsTab(loc),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPointsTab() {
+  Widget _buildPointsTab(AppLocalizations loc) {
     return SingleChildScrollView(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -81,7 +84,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             child: Column(
               children: [
                 Text(
-                  'TOTAL ECO POINTS',
+                  loc.totalEcoPoints,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 16,
@@ -107,7 +110,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  '${1000 - (totalPoints % 1000)} points to next level',
+                  loc.pointsToNextLevel((1000 - (totalPoints % 1000)).toString()),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
@@ -158,7 +161,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        'Level $level • Eco Warrior',
+                        loc.levelLabel(level.toString()),
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -175,7 +178,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
 
           // Badges Section
           Text(
-            'ACHIEVEMENTS & BADGES',
+            loc.achievementsBadges,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -190,12 +193,12 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             crossAxisSpacing: 15,
             mainAxisSpacing: 15,
             children: [
-              _buildBadge('Eco Starter', Icons.eco, true),
-              _buildBadge('Bus Commuter', Icons.directions_bus, true),
-              _buildBadge('Bike Enthusiast', Icons.pedal_bike, false),
-              _buildBadge('Weekly Goal', Icons.emoji_events, true),
-              _buildBadge('Monthly Goal', Icons.star, true),
-              _buildBadge('Carbon Saver', Icons.forest, true),
+              _buildBadge(loc.ecoStarter, Icons.eco, true),
+              _buildBadge(loc.busCommuter, Icons.directions_bus, true),
+              _buildBadge(loc.bikeEnthusiast, Icons.pedal_bike, false),
+              _buildBadge(loc.weeklyGoal, Icons.emoji_events, true),
+              _buildBadge(loc.monthlyGoal, Icons.star, true),
+              _buildBadge(loc.carbonSaver, Icons.forest, true),
             ],
           ),
           SizedBox(height: 20),
@@ -204,7 +207,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
     );
   }
 
-  Widget _buildRewardsTab() {
+  Widget _buildRewardsTab(AppLocalizations loc) {
     return Column(
       children: [
         // Available Rewards Header
@@ -216,7 +219,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               Icon(Icons.card_giftcard, color: kPrimaryColor),
               SizedBox(width: 10),
               Text(
-                'Available Rewards',
+                loc.availableRewards,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -224,7 +227,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               ),
               Spacer(),
               Text(
-                '${availableRewards.length} rewards',
+                loc.rewardsCount(availableRewards.length.toString()),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 14,
@@ -233,10 +236,10 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             ],
           ),
         ),
-        
-        // Available Rewards Grid - Fixed height container
+
+        // Available Rewards Grid
         Container(
-          height: 220, // Fixed height to prevent overflow
+          height: 220,
           child: GridView.builder(
             padding: EdgeInsets.all(15),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -248,11 +251,11 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             itemCount: availableRewards.length,
             itemBuilder: (context, index) {
               final reward = availableRewards[index];
-              return _buildRewardCard(reward, false);
+              return _buildRewardCard(reward, false, loc);
             },
           ),
         ),
-        
+
         // Redeemed Rewards Header
         Container(
           padding: EdgeInsets.all(20),
@@ -262,7 +265,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               Icon(Icons.history, color: Colors.grey[600]),
               SizedBox(width: 10),
               Text(
-                'Redeemed Rewards',
+                loc.redeemedRewards,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -271,7 +274,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               ),
               Spacer(),
               Text(
-                '${redeemedRewards.length} items',
+                loc.itemsCount(redeemedRewards.length.toString()),
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 14,
@@ -280,8 +283,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
             ],
           ),
         ),
-        
-        // Redeemed Rewards List - Expanded to take remaining space
+
         Expanded(
           child: redeemedRewards.isEmpty
               ? Center(
@@ -291,7 +293,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                       Icon(Icons.history_toggle_off, size: 50, color: Colors.grey[300]),
                       SizedBox(height: 10),
                       Text(
-                        'No redeemed rewards yet',
+                        loc.noRedeemedRewards,
                         style: TextStyle(
                           color: Colors.grey[500],
                           fontSize: 16,
@@ -305,7 +307,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                   itemCount: redeemedRewards.length,
                   itemBuilder: (context, index) {
                     final reward = redeemedRewards[index];
-                    return _buildRedeemedRewardCard(reward);
+                    return _buildRedeemedRewardCard(reward, loc);
                   },
                 ),
         ),
@@ -313,9 +315,9 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
     );
   }
 
-  Widget _buildRewardCard(Map<String, dynamic> reward, bool isRedeemed) {
+  Widget _buildRewardCard(Map<String, dynamic> reward, bool isRedeemed, AppLocalizations loc) {
     bool canRedeem = totalPoints >= reward['points'];
-    
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -331,7 +333,6 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Reward Icon
           Container(
             height: 80,
             width: double.infinity,
@@ -346,8 +347,6 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               child: Icon(reward['icon'], size: 40, color: kPrimaryColor),
             ),
           ),
-          
-          // Reward Details
           Padding(
             padding: EdgeInsets.all(15),
             child: Column(
@@ -356,7 +355,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                 Text(
                   reward['name'],
                   style: TextStyle(
-                    fontSize: 14, // Reduced font size
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[800],
                   ),
@@ -366,14 +365,14 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                 SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.eco, size: 14, color: kPrimaryColor), // Reduced icon size
+                    Icon(Icons.eco, size: 14, color: kPrimaryColor),
                     SizedBox(width: 5),
                     Text(
                       '${reward['points']} pts',
                       style: TextStyle(
                         color: kPrimaryColor,
                         fontWeight: FontWeight.w600,
-                        fontSize: 12, // Reduced font size
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -382,18 +381,20 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: canRedeem ? () => _redeemReward(reward) : null,
+                    onPressed: canRedeem ? () => _redeemReward(reward, loc) : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: canRedeem ? kPrimaryColor : Colors.grey[400],
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10), // Reduced padding
+                      padding: EdgeInsets.symmetric(vertical: 10),
                     ),
                     child: Text(
-                      canRedeem ? 'Redeem' : 'Need ${reward['points'] - totalPoints} more',
-                      style: TextStyle(fontSize: 12), // Reduced font size
+                      canRedeem
+                          ? loc.redeem
+                          : loc.needMorePoints((reward['points'] - totalPoints).toString()),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
@@ -405,7 +406,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
     );
   }
 
-  Widget _buildRedeemedRewardCard(Map<String, dynamic> reward) {
+  Widget _buildRedeemedRewardCard(Map<String, dynamic> reward, AppLocalizations loc) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -444,7 +445,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               style: TextStyle(
                 color: Colors.red,
                 fontWeight: FontWeight.bold,
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
               ),
             ),
             Text(
@@ -460,7 +461,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
     );
   }
 
-  void _redeemReward(Map<String, dynamic> reward) {
+  void _redeemReward(Map<String, dynamic> reward, AppLocalizations loc) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -480,12 +481,12 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'Redeem Reward?',
+                loc.redeemRewardTitle,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Text(
-                'Redeem ${reward['name']} for ${reward['points']} eco points?',
+                loc.redeemRewardDescription(reward['name'], reward['points'].toString()),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey[600]),
               ),
@@ -501,7 +502,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text('Cancel'),
+                      child: Text(loc.cancel),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -511,7 +512,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('🎉 ${reward['name']} redeemed successfully!'),
+                            content: Text('🎉 ${loc.redeemSuccess(reward['name'])}'),
                             backgroundColor: kPrimaryColor,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -528,7 +529,7 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text('Redeem'),
+                      child: Text(loc.redeemConfirm),
                     ),
                   ),
                 ],
@@ -544,8 +545,8 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
     return Column(
       children: [
         Container(
-          width: 60, // Reduced size
-          height: 60, // Reduced size
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
             color: achieved ? kPrimaryColor : Colors.grey[300],
             shape: BoxShape.circle,
@@ -557,14 +558,14 @@ class _EcoPointsScreenState extends State<EcoPointsScreen> {
               ),
             ],
           ),
-          child: Icon(icon, color: achieved ? Colors.white : Colors.grey[500], size: 25), // Reduced icon size
+          child: Icon(icon, color: achieved ? Colors.white : Colors.grey[500], size: 25),
         ),
         SizedBox(height: 8),
         Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 10, // Reduced font size
+            fontSize: 10,
             fontWeight: achieved ? FontWeight.w600 : FontWeight.normal,
             color: achieved ? kPrimaryColor : Colors.grey[600],
           ),

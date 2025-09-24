@@ -30,20 +30,34 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # 🔹 Localization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2   # keep updated
+
+  # 🔹 State management
   provider: ^6.0.5
+
+  # 🔹 Local storage
   shared_preferences: ^2.2.2
+
+  # 🔹 Location & Maps
   geolocator: ^11.0.1
   google_maps_flutter: ^2.5.0
-  
-  
-  fl_chart: ^0.66.0  # ✅ Compatible with charts_flutter
 
+  # 🔹 Charts
+  fl_chart: ^0.66.0
 
+  # 🔹 Animations
   lottie: ^2.7.0
-  http: ^0.13.6
-  intl: ^0.17.0   # ✅ Compatible with charts_flutter
 
+  # 🔹 API calls
+  http: ^0.13.6
+
+  # 🔹 Icons
   cupertino_icons: ^1.0.8
+
 
 
 dev_dependencies:
@@ -67,7 +81,11 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+  generate: true
   uses-material-design: true
+  assets:
+    - lib/l10n/
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

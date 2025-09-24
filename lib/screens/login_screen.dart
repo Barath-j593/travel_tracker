@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:travel_tracker/services/auth_service.dart';
 import 'package:travel_tracker/screens/register_screen.dart';
 import 'package:travel_tracker/utils/constants.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
+import 'package:travel_tracker/providers/locale_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -20,16 +22,17 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final loc = AppLocalizations.of(context)!;
         return AlertDialog(
-          title: Text('GPS Location Usage Consent'),
+          title: Text(loc.gpsConsentTitle),
           content: Text(
-            'Travel Tracker uses your GPS location to enable trip tracking and family safety features. Your location data is securely stored using industry-standard encryption to protect your privacy. We are committed to safeguarding your information and will not share it without your consent.',
+            loc.gpsConsentDescription,
             style: TextStyle(fontSize: 14),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: Text(loc.ok),
             ),
           ],
         );
@@ -38,16 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    final loc = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (!_gpsConsent) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please agree to GPS location usage to proceed.')),
+        SnackBar(content: Text(loc.gpsConsentRequired)),
       );
       return;
     }
 
     setState(() => _isLoading = true);
-    
+
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       await authService.login(
@@ -57,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Navigation is handled by AuthWrapper
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed. Please try again.')),
+        SnackBar(content: Text(loc.loginFailed)),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -66,7 +70,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final localeProvider = Provider.of<LocaleProvider>(context);
+
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        actions: [
+          // Language Dropdown
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<Locale>(
+                value: localeProvider.locale,
+                items: AppLocalizations.supportedLocales
+                    .map((locale) => DropdownMenuItem(
+                          value: locale,
+                          child: Text(locale.languageCode.toUpperCase()),
+                        ))
+                    .toList(),
+                onChanged: (locale) {
+                  if (locale != null) {
+                    localeProvider.setLocale(locale);
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -82,9 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Icon(Icons.directions_car, size: 120, color: kPrimaryColor),
                 SizedBox(height: 20),
-                Text('Travel Tracker', style: kTitleStyle),
+                Text(loc.appTitle, style: kTitleStyle),
                 SizedBox(height: 10),
-                Text('Track your journeys, earn eco-points', style: kSubtitleStyle),
+                Text(loc.appSubtitle, style: kSubtitleStyle),
                 SizedBox(height: 30),
                 Card(
                   elevation: 8,
@@ -97,22 +131,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           TextFormField(
                             controller: _emailController,
-                            decoration: InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email)),
-                            validator: (value) => value?.isEmpty ?? true ? 'Please enter email' : null,
+                            decoration: InputDecoration(
+                              labelText: loc.email,
+                              prefixIcon: Icon(Icons.email),
+                            ),
+                            validator: (value) => value?.isEmpty ?? true ? loc.enterEmail : null,
                           ),
                           SizedBox(height: 16),
                           TextFormField(
                             controller: _passwordController,
-                            decoration: InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock)),
+                            decoration: InputDecoration(
+                              labelText: loc.password,
+                              prefixIcon: Icon(Icons.lock),
+                            ),
                             obscureText: true,
-                            validator: (value) => value?.isEmpty ?? true ? 'Please enter password' : null,
+                            validator: (value) => value?.isEmpty ?? true ? loc.enterPassword : null,
                           ),
                           SizedBox(height: 16),
                           CheckboxListTile(
                             title: GestureDetector(
                               onTap: _showConsentDialog,
                               child: Text(
-                                'I agree to allow Travel Tracker to use my GPS location for trip tracking and family safety features.',
+                                loc.gpsConsentCheckbox,
                                 style: TextStyle(fontSize: 14, color: Colors.grey[800]),
                               ),
                             ),
@@ -129,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? CircularProgressIndicator()
                               : ElevatedButton(
                                   onPressed: _login,
-                                  child: Text('Login', style: TextStyle(fontSize: 16)),
+                                  child: Text(loc.login, style: TextStyle(fontSize: 16)),
                                   style: ElevatedButton.styleFrom(
                                     minimumSize: Size(double.infinity, 50),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -137,8 +177,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                           SizedBox(height: 16),
                           TextButton(
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen())),
-                            child: Text('Create new account'),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => RegisterScreen()),
+                            ),
+                            child: Text(loc.createAccount),
                           ),
                           SizedBox(height: 16),
                           Container(
@@ -149,9 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: Column(
                               children: [
-                                Text('Demo Credentials:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(loc.demoCredentials, style: TextStyle(fontWeight: FontWeight.bold)),
                                 Text('user@example.com / password'),
-                                Text('admin@example.com / password (Admin)'),
+                                Text('admin@example.com / password (${loc.admin})'),
                               ],
                             ),
                           ),

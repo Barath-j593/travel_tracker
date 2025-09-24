@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
 
 class TripRecordSimpleScreen extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
   DateTime? _startTime;
   Duration _duration = Duration();
   double _distance = 0.0;
-  String _transportMode = 'car'; // Changed to lowercase to match DropdownMenuItem values
+  String _transportMode = 'car';
 
   void _toggleRecording() {
     setState(() {
@@ -29,7 +30,7 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
     Future.delayed(Duration(seconds: 1), () {
       if (_isRecording && mounted) {
         setState(() {
-          _duration = _duration + Duration(seconds: 1);
+          _duration += Duration(seconds: 1);
           _distance = _duration.inSeconds * 0.01;
         });
         _startTimer();
@@ -38,23 +39,24 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
   }
 
   void _showTripSummary() {
+    final loc = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Trip Completed'),
+        title: Text(loc.tripCompleted),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Duration: ${_formatDuration(_duration)}'),
-            Text('Distance: ${_distance.toStringAsFixed(2)} km'),
-            Text('Mode: ${_transportMode}'), // Use lowercase for consistency
-            Text('Eco Points: +${(_distance * 10).toInt()}'),
+            Text('${loc.duration}: ${_formatDuration(_duration)}'),
+            Text('${loc.distance}: ${_distance.toStringAsFixed(2)} km'),
+            Text('${loc.mode}: ${_transportMode.toUpperCase()}'),
+            Text('${loc.ecoPoints}: +${(_distance * 10).toInt()}'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+            child: Text(loc.ok),
           ),
         ],
       ),
@@ -62,6 +64,7 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
   }
 
   Widget _buildMapPlaceholder() {
+    final loc = AppLocalizations.of(context)!;
     return Container(
       height: 300,
       decoration: BoxDecoration(
@@ -73,25 +76,17 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
       ),
       child: Stack(
         children: [
-          Positioned(
-            top: 50,
-            left: 50,
-            child: Icon(Icons.location_pin, color: Colors.red, size: 40),
-          ),
-          Positioned(
-            bottom: 50,
-            right: 50,
-            child: Icon(Icons.location_pin, color: Colors.green, size: 40),
-          ),
+          Positioned(top: 50, left: 50, child: Icon(Icons.location_pin, color: Colors.red, size: 40)),
+          Positioned(bottom: 50, right: 50, child: Icon(Icons.location_pin, color: Colors.green, size: 40)),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.map, size: 60, color: Colors.blue),
                 SizedBox(height: 16),
-                Text('Live GPS Tracking Active', style: TextStyle(fontSize: 18)),
+                Text(loc.liveGPSTracking, style: TextStyle(fontSize: 18)),
                 SizedBox(height: 8),
-                Text('Simulating trip recording...', style: TextStyle(color: Colors.grey)),
+                Text(loc.simulatingTrip, style: TextStyle(color: Colors.grey)),
               ],
             ),
           ),
@@ -102,8 +97,10 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Record Trip')),
+      appBar: AppBar(title: Text(loc.recordTrip)),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -118,60 +115,55 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildMetric('Duration', _formatDuration(_duration)),
-                          _buildMetric('Distance', '${_distance.toStringAsFixed(2)} km'),
-                          _buildMetric('Mode', _transportMode), // Use lowercase
+                          _buildMetric(loc.duration, _formatDuration(_duration)),
+                          _buildMetric(loc.distance, '${_distance.toStringAsFixed(2)} km'),
+                          _buildMetric(loc.mode, _transportMode.toUpperCase()),
                         ],
                       ),
                     ),
                   ),
                   SizedBox(height: 16),
-                  
                   DropdownButtonFormField<String>(
-                    value: _transportMode, // Ensure this matches an item value
-                    items: ['car', 'bus', 'bicycle', 'walk', 'train'] // Changed to lowercase
+                    value: _transportMode,
+                    items: ['car', 'bus', 'bicycle', 'walk', 'train']
                         .map((mode) => DropdownMenuItem(
                               value: mode,
                               child: Row(
                                 children: [
                                   Icon(_getTransportIcon(mode)),
                                   SizedBox(width: 8),
-                                  Text(mode.toUpperCase()), // Display uppercase for UI
+                                  Text(mode.toUpperCase()),
                                 ],
                               ),
                             ))
                         .toList(),
-                    onChanged: _isRecording ? null : (value) {
-                      if (value != null) {
-                        setState(() {
-                          _transportMode = value;
-                        });
-                      }
-                    },
+                    onChanged: _isRecording
+                        ? null
+                        : (value) {
+                            if (value != null) setState(() => _transportMode = value);
+                          },
                     decoration: InputDecoration(
-                      labelText: 'Transport Mode',
+                      labelText: loc.transportMode,
                       border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
-                  
                   ElevatedButton.icon(
                     onPressed: _toggleRecording,
                     icon: Icon(_isRecording ? Icons.stop : Icons.play_arrow),
-                    label: Text(_isRecording ? 'Stop Trip' : 'Start Trip'),
+                    label: Text(_isRecording ? loc.stopTrip : loc.startTrip),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 50),
                       backgroundColor: _isRecording ? Colors.red : Colors.green,
                       foregroundColor: Colors.white,
                     ),
                   ),
-                  
                   if (_isRecording) ...[
                     SizedBox(height: 16),
                     LinearProgressIndicator(),
                     SizedBox(height: 8),
                     Text(
-                      'Recording your trip...',
+                      loc.recordingTrip,
                       style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -186,12 +178,18 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
 
   IconData _getTransportIcon(String mode) {
     switch (mode.toLowerCase()) {
-      case 'car': return Icons.directions_car;
-      case 'bus': return Icons.directions_bus;
-      case 'bicycle': return Icons.pedal_bike;
-      case 'walk': return Icons.directions_walk;
-      case 'train': return Icons.train;
-      default: return Icons.directions;
+      case 'car':
+        return Icons.directions_car;
+      case 'bus':
+        return Icons.directions_bus;
+      case 'bicycle':
+        return Icons.pedal_bike;
+      case 'walk':
+        return Icons.directions_walk;
+      case 'train':
+        return Icons.train;
+      default:
+        return Icons.directions;
     }
   }
 
@@ -206,9 +204,9 @@ class _TripRecordSimpleScreenState extends State<TripRecordSimpleScreen> {
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${twoDigits(duration.inHours)}:$minutes:$seconds";
   }
 
   @override

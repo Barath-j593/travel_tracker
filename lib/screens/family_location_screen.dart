@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_tracker/l10n/app_localizations.dart';
 import 'package:travel_tracker/utils/constants.dart';
 
 class FamilyLocationScreen extends StatefulWidget {
@@ -10,7 +11,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
   final List<Map<String, dynamic>> familyMembers = [
     {
       'name': 'Sarah Wilson',
-      'relation': 'Wife',
+      'relation': 'wife',
       'location': 'Office - Downtown',
       'distance': '2.5 km away',
       'status': 'online',
@@ -20,7 +21,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
     },
     {
       'name': 'Mike Wilson',
-      'relation': 'Son',
+      'relation': 'son',
       'location': 'School - City Center',
       'distance': '5.2 km away',
       'status': 'online',
@@ -30,7 +31,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
     },
     {
       'name': 'Emma Wilson',
-      'relation': 'Daughter',
+      'relation': 'daughter',
       'location': 'University Campus',
       'distance': '8.7 km away',
       'status': 'offline',
@@ -40,7 +41,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
     },
     {
       'name': 'Robert Wilson',
-      'relation': 'Father',
+      'relation': 'father',
       'location': 'Home - Suburban Area',
       'distance': '12.3 km away',
       'status': 'online',
@@ -50,12 +51,32 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
     },
   ];
 
+  String _getRelationText(String relation, AppLocalizations loc) {
+    switch (relation) {
+      case 'wife':
+        return loc.relationWife;
+      case 'son':
+        return loc.relationSon;
+      case 'daughter':
+        return loc.relationDaughter;
+      case 'father':
+        return loc.relationFather;
+      default:
+        return relation;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
+    int onlineCount =
+        familyMembers.where((member) => member['status'] == 'online').length;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Family Location'),
+        title: Text(loc.familyLocationTitle),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -65,7 +86,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Locations updated'),
+                  content: Text(loc.locationsUpdated),
                   backgroundColor: kPrimaryColor,
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -103,7 +124,8 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                     color: Colors.white.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.family_restroom_rounded, size: 30, color: Colors.white),
+                  child:
+                      Icon(Icons.family_restroom_rounded, size: 30, color: Colors.white),
                 ),
                 SizedBox(width: 15),
                 Expanded(
@@ -111,7 +133,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Family Safety',
+                        loc.familySafetyTitle,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -120,7 +142,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        'Real-time location sharing with consent',
+                        loc.familySafetySubtitle,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 14,
@@ -141,7 +163,8 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
               borderRadius: BorderRadius.circular(15),
               color: Colors.blue[50],
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1571494146906-86de15d3817b?w=400'),
+                image: NetworkImage(
+                    'https://images.unsplash.com/photo-1571494146906-86de15d3817b?w=400'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -157,7 +180,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                     Icon(Icons.map_rounded, size: 40, color: Colors.white),
                     SizedBox(height: 10),
                     Text(
-                      'Family Map View',
+                      loc.familyMapViewTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -165,7 +188,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                       ),
                     ),
                     Text(
-                      '4 family members visible',
+                      loc.familyMapViewSubtitle(onlineCount),
                       style: TextStyle(color: Colors.white.withOpacity(0.9)),
                     ),
                   ],
@@ -182,7 +205,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                 Icon(Icons.group_rounded, color: Colors.grey[600], size: 20),
                 SizedBox(width: 8),
                 Text(
-                  'FAMILY MEMBERS',
+                  loc.familyMembersHeader,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w600,
@@ -192,7 +215,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
                 ),
                 Spacer(),
                 Text(
-                  '${familyMembers.where((member) => member['status'] == 'online').length} Online',
+                  '${onlineCount} ${loc.onlineLabel}',
                   style: TextStyle(
                     color: kPrimaryColor,
                     fontWeight: FontWeight.w600,
@@ -209,7 +232,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
               itemCount: familyMembers.length,
               itemBuilder: (context, index) {
                 final member = familyMembers[index];
-                return _buildFamilyMemberCard(member);
+                return _buildFamilyMemberCard(member, loc);
               },
             ),
           ),
@@ -218,7 +241,7 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
     );
   }
 
-  Widget _buildFamilyMemberCard(Map<String, dynamic> member) {
+  Widget _buildFamilyMemberCard(Map<String, dynamic> member, AppLocalizations loc) {
     return Container(
       margin: EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
@@ -251,11 +274,13 @@ class _FamilyLocationScreenState extends State<FamilyLocationScreen> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: member['status'] == 'online' ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                color: member['status'] == 'online'
+                    ? Colors.green.withOpacity(0.1)
+                    : Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                member['relation'],
+                _getRelationText(member['relation'], loc),
                 style: TextStyle(
                   fontSize: 10,
                   color: member['status'] == 'online' ? Colors.green : Colors.grey,
